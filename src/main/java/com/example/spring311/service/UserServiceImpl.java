@@ -4,6 +4,7 @@ import com.example.spring311.model.User;
 import com.example.spring311.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,8 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository repository) {
         this.repository = repository;
     }
+
+
 
     @Override
     public List<User> getAllUsers() {
@@ -48,8 +51,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateOrSaveUser(User user) {
-        Optional.ofNullable(user.getId())
-            .ifPresentOrElse(x -> updateUser(user),
-                () -> addUser(user));
+        fOnTifKisNull(user.getId(), user,
+            this::updateUser,
+            this::addUser);
     }
+
+    public static <K, T> void fOnTifKisNull(K k, T t, Consumer<T> left,
+        Consumer<T> right) {
+        Optional.ofNullable(k).ifPresentOrElse(
+            x -> left.accept(t),
+            () -> right.accept(t));
+    }
+
+
+
 }
