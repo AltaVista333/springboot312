@@ -13,7 +13,7 @@
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
     <p class="navbar-brand text-white">
-      <b><span class="align-middle" th:text="${user.getLogin()}"></span></b>
+      <b><span class="align-middle" th:text="${user.login}"></span></b>
       <span class="align-middle">with roles:</span>
       <span class="align-middle"
             th:each="authority : ${#authentication.getAuthorities()}"
@@ -80,25 +80,29 @@
                       <th>Delete</th>
                     </tr>
                     <tr th:each="user : ${users}">
-                      <td th:text="${user.getId()}">id</td>
-                      <td th:text="${user.getName()}">name</td>
-                      <td th:text="${user.getSurname()}">surname</td>
-                      <td th:text="${user.getAge()}">age</td>
+                      <td th:text="${user.id}">id</td>
+                      <td th:text="${user.name}">name</td>
+                      <td th:text="${user.surname}">surname</td>
+                      <td th:text="${user.age}">age</td>
                       <td th:text="${user.email}">email</td>
-                      <td th:text="${user.getLogin()}">login</td>
-                      <td th:text="${user.getRoles()}">roles</td>
+                      <td th:text="${user.login}">login</td>
+                      <td>
+                      <th:block th:each="role : ${user.roles}"
+                                th:text="${role.userRole.replaceFirst('ROLE_', '')} + ' '">
+                      </th:block>
+                    </td>
                       <td>
                         <a type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                            data-bs-target="#editModal"
-                           th:data-bs-target="${'#editModal'+user.getId()}">Edit</a>
+                           th:data-bs-target="${'#editModal'+user.id}">Edit</a>
                       </td>
                       <td>
                         <a type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
                            data-bs-target="#DELETE"
-                           th:data-bs-target="${'#DELETE'+user.getId()}">Delete</a>
+                           th:data-bs-target="${'#DELETE'+user.id}">Delete</a>
                       </td>
 
-                      <div class="modal fade" th:id="${'editModal'+user.getId()}"
+                      <div class="modal fade" th:id="${'editModal'+user.id}"
                            aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" modal-dialog-centered>
                           <div class="modal-content">
@@ -118,17 +122,17 @@
                                 <label for="name0"><b>Name</b></label>
                                 <input th:name="name" th:type="text"
                                        class="form-control" id="name0"
-                                       th:value="${user.getName()}"/>
+                                       th:value="${user.name}"/>
                                 <br>
                                 <label for="surname0"><b>Surname</b></label>
                                 <input th:name="surname" th:type="text"
                                        class="form-control" id="surname0"
-                                       th:value="${user.getSurname()}"/>
+                                       th:value="${user.name}"/>
                                 <br>
                                 <label for="age0"><b>Age</b></label>
                                 <input th:name="age" th:type="number"
                                        class="form-control" id="age0"
-                                       th:value="${user.getAge()}"/>
+                                       th:value="${user.age}"/>
                                 <br>
                                 <label for="email0"><b>Email</b></label>
                                 <input th:name="email" th:type="text"
@@ -138,7 +142,7 @@
                                 <label for="login0"><b>Login</b></label>
                                 <input th:name="login" th:type="text"
                                        class="form-control" id="login0"
-                                       th:value="${user.getLogin()}"/>
+                                       th:value="${user.login}"/>
                                 <br>
                                 <label for="password0"><b>Password</b></label>
                                 <input th:name="password"
@@ -152,9 +156,9 @@
                                         id="role"
                                         name="roles" size="2" required>
                                   <option th:each="role: ${roles}"
-                                          th:value="${role.getId()}"
+                                          th:value="${role.id}"
                                           th:selected="${user.roles.contains(role)}">
-                                    <th:block th:text="${role.getUserRole()}">
+                                    <th:block th:text="${role.userRole}">
                                     </th:block>
                                   </option>
                                 </select>
@@ -172,7 +176,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="modal fade" th:id="${'DELETE'+user.getId()}"
+                      <div class="modal fade" th:id="${'DELETE'+user.id}"
                            aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                           <div class="modal-content">
@@ -183,23 +187,23 @@
                                       aria-label="Close"></button>
                             </div>
                             <form class="modal-body col-md text-center"
-                                  th:action="@{/admin/delete/{id}(id=${user.getId()})}"
+                                  th:action="@{/admin/delete/{id}(id=${user.id})}"
                                   th:method="DELETE">
                               <div class="modal-body col-md">
                                 <label for="id"><b>ID</b></label>
                                 <input th:name="id" th:type="text" class="form-control"
-                                       id="id" th:value="${user.getId()}" disabled/>
+                                       id="id" th:value="${user.id}" disabled/>
                                 <br>
                                 <label for="name1"><b>Name</b></label>
                                 <input th:name="name" th:type="text"
                                        class="form-control"
-                                       id="name1" th:value="${user.getName()}"
+                                       id="name1" th:value="${user.name}"
                                        disabled/>
                                 <br>
                                 <label for="surname1"><b>Surname</b></label>
                                 <input th:name="surname" th:type="text"
                                        class="form-control" id="surname1"
-                                       th:value="${user.getSurname()}" disabled/>
+                                       th:value="${user.surname}" disabled/>
                                 <br>
                                 <label for="age1"><b>Age</b></label>
                                 <input th:name="age" th:type="number"
@@ -214,7 +218,7 @@
                                 <label for="login1"><b>Age</b></label>
                                 <input th:name="login" th:type="text"
                                        class="form-control"
-                                       id="login1" th:value="${user.getLogin()}"
+                                       id="login1" th:value="${user.login}"
                                        disabled/>
                                 <br>
                               </div>

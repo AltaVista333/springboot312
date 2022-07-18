@@ -14,19 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final UserService userService;
-    private final RoleService roleService;
 
-    public UserController(UserService userService, RoleService roleService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.roleService = roleService;
     }
 
     @GetMapping
     public String getUser(@AuthenticationPrincipal UserDetails user,
         Model model) {
-        userService.getUserByLogin(user.getUsername()).ifPresent(
-            model::addAttribute);
-        model.addAttribute("roles", roleService.getAllRoles());
+        userService.getUserByLogin(user.getUsername())
+            .ifPresent(model::addAttribute);
         return "user";
     }
 

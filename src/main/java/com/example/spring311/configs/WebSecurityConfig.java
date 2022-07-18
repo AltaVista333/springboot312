@@ -22,15 +22,12 @@ public class WebSecurityConfig {
     private final UserDetailsService userService;
 
     AuthenticationSuccessHandler successHandler = (request, response, authentication) -> {
-        //RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+        RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         if (roles.contains("ROLE_ADMIN")) {
-            //redirectStrategy.sendRedirect(request, response, "/admin");
-            response.sendRedirect("/admin");
-
+            redirectStrategy.sendRedirect(request, response, "/admin");
         } else if (roles.contains("ROLE_USER")) {
-            //redirectStrategy.sendRedirect(request, response, "/user");
-            response.sendRedirect("/user");
+            redirectStrategy.sendRedirect(request, response, "/user");
         } else {
             response.sendRedirect("/login");
         }
@@ -42,16 +39,14 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.httpBasic()
-            .and()
+         http
             .authorizeHttpRequests(authorize -> authorize
                 .antMatchers("/login").permitAll()
-                .mvcMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").hasRole("USER")
                 .anyRequest().authenticated()
-            ).formLogin().successHandler(successHandler)
-            .and().cors().disable().httpBasic().disable();
-
+            ).httpBasic().disable().formLogin()
+            .successHandler(successHandler);
 
         return http.build();
     }

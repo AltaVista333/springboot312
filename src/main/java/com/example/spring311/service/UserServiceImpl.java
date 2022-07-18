@@ -4,7 +4,6 @@ import com.example.spring311.model.User;
 import com.example.spring311.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,13 +16,6 @@ public class UserServiceImpl implements UserService {
 
     public UserServiceImpl(UserRepository repository) {
         this.repository = repository;
-    }
-
-    public static <K, T> void fOnTifKisNull(K k, T t, Consumer<T> left,
-        Consumer<T> right) {
-        Optional.ofNullable(k)
-            .ifPresentOrElse(x -> left.accept(t), () -> right.accept(t));
-
     }
 
     @Override
@@ -57,12 +49,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUser(User user) {
         getUserById(user.getId()).ifPresent(x -> repository.save(user));
-    }
-
-
-    @Transactional
-    public void updateOrSaveUser(User user) {
-        fOnTifKisNull(user.getId(), user, this::updateUser, this::addUser);
     }
 
     @Override
