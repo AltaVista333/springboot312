@@ -5,6 +5,8 @@ import com.example.spring311.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,12 @@ public class UserServiceImpl implements UserService {
         this.repository = repository;
     }
 
+    public static <K, T> void fOnTifKisNull(K k, T t, Consumer<T> left,
+        Consumer<T> right) {
+        Optional.ofNullable(k)
+            .ifPresentOrElse(x -> left.accept(t), () -> right.accept(t));
 
+    }
 
     @Override
     public List<User> getAllUsers() {
@@ -36,6 +43,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getUserByLogin(String login) {
+        return repository.findByLogin(login);
+    }
+
+    @Override
     @Transactional
     public void deleteUserById(Long id) {
         repository.deleteById(id);
@@ -44,25 +56,23 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(User user) {
-        getUserById(user.getId())
-            .ifPresent(x -> repository.save(user));
+        getUserById(user.getId()).ifPresent(x -> repository.save(user));
+    }
+
+
+    @Transactional
+    public void updateOrSaveUser(User user) {
+        fOnTifKisNull(user.getId(), user, this::updateUser, this::addUser);
     }
 
     @Override
-    @Transactional
-    public void updateOrSaveUser(User user) {
-        fOnTifKisNull(user.getId(), user,
-            this::updateUser,
-            this::addUser);
+    public UserDetails loadUserByUsername(String username)
+        throws UsernameNotFoundException {
+        return repository.findByLogin(username)
+            .map(x -> new org.springframework.security.core.userdetails.User(x.getLogin(),
+                x.getPassword(),
+                x.getRoles()))
+            .orElseThrow(() -> new UsernameNotFoundException(username));
     }
-
-    public static <K, T> void fOnTifKisNull(K k, T t, Consumer<T> left,
-        Consumer<T> right) {
-        Optional.ofNullable(k).ifPresentOrElse(
-            x -> left.accept(t),
-            () -> right.accept(t));
-    }
-
-
 
 }
