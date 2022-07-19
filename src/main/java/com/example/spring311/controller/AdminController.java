@@ -1,6 +1,7 @@
 package com.example.spring311.controller;
 
 import com.example.spring311.model.User;
+import com.example.spring311.service.RoleService;
 import com.example.spring311.service.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +22,11 @@ public class AdminController {
     public static final String REDIRECT_TO_ADMIN_INDEX = "redirect:/admin";
 
     private final UserService userService;
+    private final RoleService roleService;
 
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping
@@ -32,6 +35,7 @@ public class AdminController {
 
         userService.getUserByLogin(user.getUsername())
             .ifPresent(model::addAttribute);
+        model.addAttribute("roles", roleService.getAllRoles());
         model.addAttribute("users", userService.getAllUsers());
 
         return "admin";
