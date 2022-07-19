@@ -30,8 +30,8 @@ public class AdminController {
     public String getAdminIndexPage(@AuthenticationPrincipal UserDetails user,
         Model model) {
 
-        userService.getUserByLogin(user.getUsername()).ifPresent(
-            model::addAttribute);
+        userService.getUserByLogin(user.getUsername())
+            .ifPresent(model::addAttribute);
         model.addAttribute("users", userService.getAllUsers());
 
         return "admin";
@@ -50,14 +50,11 @@ public class AdminController {
         return REDIRECT_TO_ADMIN_INDEX;
     }
 
-
     @DeleteMapping("/delete/{id}")
-    public String deleteUser(@PathVariable Long id)  {
+    public String deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
         return REDIRECT_TO_ADMIN_INDEX;
     }
-
-
 
 
 }

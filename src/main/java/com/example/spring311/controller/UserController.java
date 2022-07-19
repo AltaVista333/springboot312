@@ -1,6 +1,5 @@
 package com.example.spring311.controller;
 
-import com.example.spring311.service.RoleService;
 import com.example.spring311.service.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
